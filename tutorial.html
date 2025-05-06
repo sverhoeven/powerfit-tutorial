@@ -97,7 +97,7 @@ n = min(num, len(analyzer.solutions))
 write_fits_to_pdb(structure, analyzer.solutions[:n], basename=join(directory, 'fit'))
 
 # Read some of the output
-list(Path('.').iterdir())
+print(list(Path('.').iterdir()))
 
 print(Path('solutions.out').read_text())
 
