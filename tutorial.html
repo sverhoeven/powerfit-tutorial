@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.5/full/pyodide.js"></script>
+  </head>
+
+  <body>
+    <p>
+      You can execute any Python code. Just enter something in the box below and
+      click the button.
+    </p>
+<textarea id="code" rows="26" style="width: 100%;">
+    
+# Running equivalent of `powerfit ribosome-KsgA.map 13 KsgA.pdb -a 20 -l`
+# Prepare input
+import sys
+from pyodide.http import pyfetch
+from pathlib import Path
+
+async def download_file(url, filename):
+    response = await pyfetch(url)
+    content = await response.bytes()
+    Path(filename).write_bytes(content)
+
+await download_file("http://localhost:8000/ribosome-KsgA.map", "ribosome-KsgA.map")
+await download_file("http://localhost:8000/KsgA.pdb", "KsgA.pdb")
+
+from powerfit import Volume
+target = Volume.fromfile("ribosome-KsgA.map")
+print(target.shape)
+
+from powerfit.powerfit import main
+sys.argv = [
+"powerfit",
+"ribosome-KsgA.map",
+"13",
+"KsgA.pdb",
+"-a",
+"20",
+"-l"
+]
+main()
+
+# Read some of the output
+list(Path('.').iterdir())
+
+    </textarea>
+    <button onclick="evaluatePython()">Run</button>
+    <br />
+    <br />
+    <div>Output:</div>
+    <textarea id="output" style="width: 100%;" rows="20" disabled></textarea>
+
+    <script>
+      const output = document.getElementById("output");
+      const code = document.getElementById("code");
+
+      function addToOutput(s) {
+        output.value += ">>>" + code.value + "\n" + s + "\n";
+      }
+
+      output.value = "Initializing...\n";
+      // init Pyodide
+      async function main() {
+        let pyodide = await loadPyodide();
+        await pyodide.loadPackage("micropip") 
+        const micropip = pyodide.pyimport("micropip");
+        await micropip.install('http://localhost:8000/powerfit-3.0.0-cp312-cp312-pyodide_2024_0_wasm32.whl');
+        output.value += "Powerfit installed\nReady!\n";
+        return pyodide;
+      }
+      let pyodideReadyPromise = main();
+
+      async function evaluatePython() {
+        let pyodide = await pyodideReadyPromise;
+        try {
+          let output = await pyodide.runPythonAsync(code.value);
+          addToOutput(output);
+        } catch (err) {
+          addToOutput(err);
+        }
+      }
+    </script>
+  </body>
+</html>
