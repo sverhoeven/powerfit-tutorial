@@ -25,24 +25,24 @@ async def download_file(url, filename):
 await download_file("http://localhost:8000/ribosome-KsgA.map", "ribosome-KsgA.map")
 await download_file("http://localhost:8000/KsgA.pdb", "KsgA.pdb")
 
-from powerfit import Volume
+from powerfit_em import Volume
 target = Volume.fromfile("ribosome-KsgA.map")
 print(target.shape)
 
-#from powerfit.powerfit import main
+#from powerfit_em.powerfit import main
 #sys.argv = [ "powerfit","ribosome-KsgA.map","13","KsgA.pdb","-a","20","-l"]
 #main()
 # main() does not work, because it tries to use multiprocessing which is not implemented in pyodide
 
 # TODO make single core method to simplify usage in pyodide, now it is copy of main() internals
-from powerfit import (
+from powerfit_em import (
     Volume, Structure, structure_to_shape_like, proportional_orientations,
     quat_to_rotmat, determine_core_indices
     )
-from powerfit.powerfitter import PowerFitter
-from powerfit.analyzer import Analyzer
-from powerfit.helpers import mkdir_p, write_fits_to_pdb, fisher_sigma
-from powerfit.volume import extend, nearest_multiple2357, trim, resample
+from powerfit_em.powerfitter import PowerFitter
+from powerfit_em.analyzer import Analyzer
+from powerfit_em.helpers import mkdir_p, write_fits_to_pdb, fisher_sigma
+from powerfit_em.volume import extend, nearest_multiple2357, trim, resample
 import numpy as np
 from os.path import join
 
@@ -122,7 +122,7 @@ print(Path('solutions.out').read_text())
         let pyodide = await loadPyodide();
         await pyodide.loadPackage("micropip") 
         const micropip = pyodide.pyimport("micropip");
-        await micropip.install('http://localhost:8000/powerfit-3.0.0-cp312-cp312-pyodide_2024_0_wasm32.whl');
+        await micropip.install('http://localhost:8000/powerfit_em-3.0.0-cp312-cp312-pyodide_2024_0_wasm32.whl');
         output.value += "Powerfit installed\nReady!\n";
         return pyodide;
       }

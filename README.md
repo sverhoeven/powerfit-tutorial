@@ -23,7 +23,7 @@ In powerfit repo make a pyodide wheel with
 
 ```
 uvx cibuildwheel --platform pyodide
-cp ../powerfit/wheelhouse/powerfit-3.0.0-cp312-cp312-pyodide_2024_0_wasm32.whl .
+cp ../powerfit/wheelhouse/powerfit_em-3.0.0-cp312-cp312-pyodide_2024_0_wasm32.whl .
 ```
 
 Start a local server
